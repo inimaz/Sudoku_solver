@@ -1,6 +1,7 @@
 import numpy as np
 
-sudoku_0 = np.array([[3, 0, 6, 5, 0, 8, 4, 0, 0],
+sudoku_0 = np.zeros((9, 9)).astype(int)
+sudoku_1 = np.array([[3, 0, 6, 5, 0, 8, 4, 0, 0],
                      [5, 2, 0, 0, 0, 0, 0, 0, 0],
                      [0, 8, 7, 0, 0, 0, 0, 3, 1],
                      [0, 0, 3, 0, 1, 0, 0, 8, 0],
@@ -10,24 +11,35 @@ sudoku_0 = np.array([[3, 0, 6, 5, 0, 8, 4, 0, 0],
                      [0, 0, 0, 0, 0, 0, 0, 7, 4],
                      [0, 0, 5, 2, 0, 6, 3, 0, 0]])
 
+sudoku_2 = np.array([[1, 4, 5, 3, 2, 7, 6, 9, 8],
+                     [8, 3, 9, 6, 5, 4, 1, 2, 7],
+                     [6, 7, 2, 9, 1, 8, 5, 4, 3],
+                     [4, 9, 6, 1, 8, 5, 3, 7, 2],
+                     [2, 1, 0, 4, 7, 3, 9, 5, 6],
+                     [7, 5, 3, 2, 9, 6, 4, 8, 1],
+                     [3, 6, 7, 5, 4, 2, 8, 1, 9],
+                     [9, 8, 4, 7, 6, 1, 2, 3, 5],
+                     [5, 2, 1, 8, 3, 9, 7, 6, 4]])
 
-def find_empty_cell(sud):
+
+def find_empty_cells(sud):
     '''
     Returns the row and col of an unassigned cell
     '''
+    empty_cells = np.empty((0, 2), int)
     for i in range(9):
         for j in range(9):
             if sud[i][j] == 0:
-                return i, j
-
-    return np.array([-1, -1])
+                empty_cells = np.append(
+                    empty_cells, np.array([[i, j]]), axis=0)
+    return empty_cells
 
 
 def is_in_row(n, row, sud):
     '''
     There is n in row
     '''
-    if n in sud[row][:]:
+    if n in sud[row, :]:
         return True
 
     return False
@@ -37,7 +49,7 @@ def is_in_column(n, column, sud):
     '''
     There is n in column
     '''
-    if n in sud[:][column]:
+    if n in sud[:, column]:
         return True
 
     return False
@@ -93,30 +105,26 @@ def solve_sudoku(sudoku, print_sudoku=False):
 
     solved = False
     i = 0
-    pos_history = np.zeros((81, 2))
+    empty_cells = find_empty_cells(sudoku)
 
     while not(solved):
-        print('Node ', i)
-        if pos_history[i, :].all() == 0:
-            print('Searching for empty cells...')
-            pos = find_empty_cell(sudoku)
-        else:
-            pos = pos_history[i, ].astype(int)
-            print('Changing number of position', pos)
 
-        if -1 in pos:  # There are no empty cells, therefore, finished
+        if i == (np.shape(empty_cells)[0]):
+            # There are no more empty cells, therefore, finished
             solved = True
         else:
-            row = pos[0]
-            col = pos[1]
-            n_start = sudoku[row, col]
+            pos = empty_cells[i, ]
+            print('%%%%%%\nNode ', i, 'Position ', pos)
 
+            row = pos[0].astype(int)
+            col = pos[1].astype(int)
+            n_start = sudoku[row, col]
             print('n_start is ', n_start)
+
             for n in range(n_start + 1, 10):
                 if check_cell_is_fine(n, row, col, sudoku):
                     sudoku[row, col] = n
-                    pos_history[i][0] = row
-                    pos_history[i][1] = col
+
                     if print_sudoku:
                         print('\nPosition ', row,
                               ' ', col, '\nNumber ', n, '\nSudoku: \n', sudoku)
@@ -126,8 +134,9 @@ def solve_sudoku(sudoku, print_sudoku=False):
                 else:
                     if n == 9:
                         sudoku[row, col] = 0
+                        n_start = 9
 
-            if sudoku[row, col] == 0 or n_start == 9:
+            if n_start == 9:
                     # If no solution found
                 if i == 0:
                     # No solution found and in the first iteration
@@ -136,9 +145,10 @@ def solve_sudoku(sudoku, print_sudoku=False):
                 else:
                     print('No solution found for ', pos,
                           '. Go back one iteration')
+                    sudoku[row, col] = 0
                     i -= 1  # No solution found, go back one iteration
     return sudoku
 
 
 print('\n Final solution\n #########\n',
-      solve_sudoku(sudoku_0, print_sudoku=True))
+      solve_sudoku(sudoku_1, print_sudoku=True))
