@@ -1,5 +1,6 @@
 import numpy as np
 
+# Some examples of sudokus to test
 sudoku_0 = np.zeros((9, 9)).astype(int)
 sudoku_1 = np.array([[3, 0, 6, 5, 0, 8, 4, 0, 0],
                      [5, 2, 0, 0, 0, 0, 0, 0, 0],
@@ -20,6 +21,20 @@ sudoku_2 = np.array([[1, 4, 5, 3, 2, 7, 6, 9, 8],
                      [3, 6, 7, 5, 4, 2, 8, 1, 9],
                      [9, 8, 4, 7, 6, 1, 2, 3, 5],
                      [5, 2, 1, 8, 3, 9, 7, 6, 4]])
+sudoku_3 = sudoku_0
+sudoku_3[1, 8] = 5
+sudoku_3[3, 2] = 5
+sudoku_3[6, 5] = 4
+sudoku_3[7, 6] = 9
+
+
+def randomized_sudoku():
+    '''
+    Generates a random sudoku. Returns the sudoku and its solution
+    '''
+    sud = sudoku_1
+    solved_sudoku = solve_sudoku(sudoku_1, False)
+    return sud, solved_sudoku
 
 
 def find_empty_cells(sud):
@@ -150,5 +165,7 @@ def solve_sudoku(sudoku, print_sudoku=False):
     return sudoku
 
 
-print('\n Final solution\n #########\n',
-      solve_sudoku(sudoku_1, print_sudoku=True))
+if __name__ == "__main__":
+    print('Initial sudoku',
+          sudoku_1, '\n Final solution\n #########\n',
+          solve_sudoku(sudoku_1, print_sudoku=True))
