@@ -1,7 +1,8 @@
 
 # Creating a Gui for the sudoku. Inspired by http://newcoder.io/gui/part-3/
 import numpy as np
-from tkinter import Tk, Canvas, Frame, Label, Button, BOTH, TOP, BOTTOM
+from copy import deepcopy  # To create 2 independent copies of the same matrix
+from tkinter import Tk, Canvas, Frame, Label, Button, BOTH, TOP, BOTTOM, LEFT, RIGHT
 import main as sudoku_solver
 
 MARGIN = 20  # Pixels around the board
@@ -16,10 +17,12 @@ class StartUI:
         self.master = master
         master.title("Sudoku")
 
+        self.frame = Frame(master)
+        self.frame.pack(side=TOP)
         self.label = Label(
-            master, text="If you are curious, you'll find the puzzles around"
-            " you. If you are determined, you will solve them.")
-        self.label.pack()
+            self.frame, text="\"If you are curious, you'll find the puzzles around"
+            " you. \nIf you are determined, you will solve them.\"")
+        self.label.pack(side=TOP)
 
         self.start_button = Button(
             master, text="Start", fg='purple', command=self.start_game)
@@ -33,15 +36,28 @@ class StartUI:
 class GameUI:
     def __init__(self, master):
         self.master = master
-        self.canvas = Canvas(master, width=WIDTH, height=HEIGHT)
+        self.canvas = Canvas(master, width=WIDTH, height=HEIGHT, bg="white")
         self.canvas.pack(fill=BOTH, side=TOP)
 
         self.check_button = Button(
             master, text="Check", fg='green')
-        self.check_button.pack(side=BOTTOM)
+        self.check_button.pack(side=RIGHT)
+        self.solve_button = Button(
+            master, text="Solve", fg='blue')
+        self.solve_button.pack(side=RIGHT)
+        self.hint_button = Button(
+            master, text="Hint", fg='purple')
+        self.hint_button.pack(side=RIGHT)
 
         # Get a sudoku and its solution
-        self.user_sudoku, self.sudoku_solution = sudoku_solver.randomized_sudoku()
+        self.user_sudoku = sudoku_solver.randomized_sudoku()
+        self.sudoku_solution = sudoku_solver.solve_sudoku(
+            deepcopy(self.user_sudoku))
+
+        self.canvas.bind("<Button-1>", self.canvas_click)
+        #self.canvas.bind("<Key>", self.canvas_key)
+
+        self.row, self.column = 0, 0
 
         self.__draw_grid()
         self.__draw_sudoku()
@@ -72,8 +88,7 @@ class GameUI:
         self.canvas.delete("numbers")
         for i in range(9):
             for j in range(9):
-                number = sudoku_solver.sudoku_1[i][j]
-                print(self.sudoku_solution)
+                number = self.user_sudoku[i, j]
                 if number != 0:
                     color = "black"
 
@@ -81,6 +96,32 @@ class GameUI:
                     y = MARGIN + SIDE / 2 + j * SIDE
                     self.canvas.create_text(
                         x, y, text=number, tags="numbers", fill=color)
+
+    def canvas_click(self, event):
+        x, y = event.x, event.y
+        if WIDTH - MARGIN > x > MARGIN and HEIGHT - MARGIN > y > MARGIN:
+            self.canvas.focus_set()
+
+            row = (x - MARGIN) // SIDE
+            column = (y - MARGIN) // SIDE
+
+            if (row, column) == (self.row, self.column):
+                (self.row, self.column) = (-1, -1)
+            elif self.user_sudoku[row][column] == 0:
+                self.row, self.column = row, column
+
+        self.__draw_red_box()
+
+    def __draw_red_box(self):
+
+        self.canvas.delete("red_square")
+        if self.row >= 0 and self.column >= 0:
+            x0 = MARGIN + self.row * SIDE + 1
+            y0 = MARGIN + self.column * SIDE + 1
+            x1 = MARGIN + (self.row + 1) * SIDE - 1
+            y1 = MARGIN + (self.column + 1) * SIDE - 1
+            self.canvas.create_rectangle(
+                x0, y0, x1, y1, outline="red", tags="red_square")
 
 
 root = Tk()

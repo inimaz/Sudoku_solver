@@ -1,40 +1,14 @@
 import numpy as np
-
-# Some examples of sudokus to test
-sudoku_0 = np.zeros((9, 9)).astype(int)
-sudoku_1 = np.array([[3, 0, 6, 5, 0, 8, 4, 0, 0],
-                     [5, 2, 0, 0, 0, 0, 0, 0, 0],
-                     [0, 8, 7, 0, 0, 0, 0, 3, 1],
-                     [0, 0, 3, 0, 1, 0, 0, 8, 0],
-                     [9, 0, 0, 8, 6, 3, 0, 0, 5],
-                     [0, 5, 0, 0, 9, 0, 6, 0, 0],
-                     [1, 3, 0, 0, 0, 0, 2, 5, 0],
-                     [0, 0, 0, 0, 0, 0, 0, 7, 4],
-                     [0, 0, 5, 2, 0, 6, 3, 0, 0]])
-
-sudoku_2 = np.array([[1, 4, 5, 3, 2, 7, 6, 9, 8],
-                     [8, 3, 9, 6, 5, 4, 1, 2, 7],
-                     [6, 7, 2, 9, 1, 8, 5, 4, 3],
-                     [4, 9, 6, 1, 8, 5, 3, 7, 2],
-                     [2, 1, 0, 4, 7, 3, 9, 5, 6],
-                     [7, 5, 3, 2, 9, 6, 4, 8, 1],
-                     [3, 6, 7, 5, 4, 2, 8, 1, 9],
-                     [9, 8, 4, 7, 6, 1, 2, 3, 5],
-                     [5, 2, 1, 8, 3, 9, 7, 6, 4]])
-sudoku_3 = sudoku_0
-sudoku_3[1, 8] = 5
-sudoku_3[3, 2] = 5
-sudoku_3[6, 5] = 4
-sudoku_3[7, 6] = 9
+import copy
+from sudoku_examples import sudoku_1
 
 
 def randomized_sudoku():
     '''
-    Generates a random sudoku. Returns the sudoku and its solution
+    Generates a random sudoku
     '''
     sud = sudoku_1
-    solved_sudoku = solve_sudoku(sudoku_1, False)
-    return sud, solved_sudoku
+    return sud
 
 
 def find_empty_cells(sud):
@@ -117,7 +91,6 @@ def solve_sudoku(sudoku, print_sudoku=False):
 
     '''
     # Initialize parameters
-
     solved = False
     i = 0
     empty_cells = find_empty_cells(sudoku)
@@ -166,6 +139,10 @@ def solve_sudoku(sudoku, print_sudoku=False):
 
 
 if __name__ == "__main__":
-    print('Initial sudoku',
-          sudoku_1, '\n Final solution\n #########\n',
-          solve_sudoku(sudoku_1, print_sudoku=True))
+
+    sudoku_1_0 = copy.deepcopy(sudoku_1)
+    print('Initial sudoku', sudoku_1_0)
+    sud = solve_sudoku(sudoku_1, print_sudoku=True)
+    print('\n Final solution\n #########\n', sud
+          )
+    print('Initial sudoku', sudoku_1_0)
