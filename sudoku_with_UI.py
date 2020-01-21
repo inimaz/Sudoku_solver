@@ -1,4 +1,3 @@
-
 # Creating a Gui for the sudoku. Inspired by http://newcoder.io/gui/part-3/
 import numpy as np
 from copy import deepcopy  # To create 2 independent copies of the same matrix

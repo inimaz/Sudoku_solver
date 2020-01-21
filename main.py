@@ -7,8 +7,40 @@ def randomized_sudoku():
     '''
     Generates a random sudoku
     '''
-    sud = sudoku_1
+
+    sud = np.zeros((9, 9)).astype(int)
+
+    for n in range(1, 10):
+        i = np.random.randint(0, 9)
+        j = np.random.randint(0, 9)
+        sud[i, j] = n
+
+    sud = solve_sudoku(sud)
+    sud = remove_cells(sud)
     return sud
+
+
+def remove_cells(solved_sudoku, N=55):
+    '''
+     This is an intermediate step. We remove cells and solve the sudoku
+     if it is still the same solution we keep on. Removing N cells in total
+    '''
+    final_sudoku = copy.deepcopy(solved_sudoku)
+    n = 0
+    # Loop
+    while n < N:
+        i = np.random.randint(0, 9)
+        j = np.random.randint(0, 9)
+        if final_sudoku[i, j] != 0:
+            final_sudoku[i, j] = 0
+            n += 1
+            sudoku = copy.deepcopy(final_sudoku)
+            if np.array_equal(solved_sudoku, solve_sudoku(sudoku)):
+                sudoku = copy.deepcopy(final_sudoku)
+            else:
+                final_sudoku[i, j] = solved_sudoku[i, j]
+                n -= 1
+    return final_sudoku
 
 
 def find_empty_cells(sud):
@@ -139,10 +171,11 @@ def solve_sudoku(sudoku, print_sudoku=False):
 
 
 if __name__ == "__main__":
+    print(remove_cells(solve_sudoku(sudoku_1)))
 
-    sudoku_1_0 = copy.deepcopy(sudoku_1)
-    print('Initial sudoku', sudoku_1_0)
-    sud = solve_sudoku(sudoku_1, print_sudoku=True)
-    print('\n Final solution\n #########\n', sud
-          )
-    print('Initial sudoku', sudoku_1_0)
+    # sudoku_1_0 = copy.deepcopy(sudoku_1)
+    # print('Initial sudoku', sudoku_1_0)
+    # sud = solve_sudoku(sudoku_1, print_sudoku=True)
+    # print('\n Final solution\n #########\n', sud
+    #       )
+    # print('Initial sudoku', sudoku_1_0)
