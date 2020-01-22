@@ -3,7 +3,7 @@ import copy
 from sudoku_examples import sudoku_1
 
 
-def randomized_sudoku():
+def randomized_sudoku(N=55):
     '''
     Generates a random sudoku
     '''
@@ -16,7 +16,7 @@ def randomized_sudoku():
         sud[i, j] = n
 
     sud = solve_sudoku(sud)
-    sud = remove_cells(sud)
+    sud = remove_cells(sud, N)
     return sud
 
 
