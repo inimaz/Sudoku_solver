@@ -171,11 +171,6 @@ def solve_sudoku(sudoku, print_sudoku=False):
 
 
 if __name__ == "__main__":
-    print(remove_cells(solve_sudoku(sudoku_1)))
-
-    # sudoku_1_0 = copy.deepcopy(sudoku_1)
-    # print('Initial sudoku', sudoku_1_0)
-    # sud = solve_sudoku(sudoku_1, print_sudoku=True)
-    # print('\n Final solution\n #########\n', sud
-    #       )
-    # print('Initial sudoku', sudoku_1_0)
+    sud = solve_sudoku(sudoku_1, print_sudoku=True)
+    print('\n Final solution\n #########\n', sud
+          )

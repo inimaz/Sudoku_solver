@@ -2,7 +2,7 @@
 import numpy as np
 from copy import deepcopy  # To create 2 independent copies of the same matrix
 from tkinter import Tk, Canvas, Frame, Label, Button, BOTH, TOP, BOTTOM, LEFT, RIGHT
-import main as sudoku_solver
+import sudoku_solver
 import time
 
 MARGIN = 20  # Pixels around the board
