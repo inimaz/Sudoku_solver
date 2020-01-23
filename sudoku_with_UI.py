@@ -29,17 +29,23 @@ class StartUI:
         self.start_button.pack(side=BOTTOM)
 
     def start_game(self):
+        try:
+            self.canvas.destroy()
+            self.clock.destroy()
+        except:
+            pass
 
         GameUI(self.master)
         self.start_button.destroy()
 
 
-class GameUI:
+class GameUI (StartUI):
     def __init__(self, master):
         self.master = master
         self.canvas = Canvas(master, width=WIDTH, height=HEIGHT, bg="white")
         self.canvas.pack(fill=BOTH, side=TOP)
 
+        # Buttons
         self.check_mode = False
         self.check_button = Button(
             master, text="Check", fg='green', command=self.check_sudoku)
@@ -53,7 +59,7 @@ class GameUI:
 
         # Get a sudoku and its solution.
         self.original_sudoku = sudoku_solver.randomized_sudoku(
-            N=30)  # Original
+            N=35)  # Original
         self.user_sudoku = deepcopy(self.original_sudoku)  # User will change
         self.sudoku_solution = sudoku_solver.solve_sudoku(
             deepcopy(self.user_sudoku))  # Solution of the sudoku
@@ -61,17 +67,16 @@ class GameUI:
         self.canvas.bind("<Button-1>", self.canvas_click)
         self.canvas.bind("<Key>", self.canvas_key)
 
+        # Start some variables
         self.row, self.column = 0, 0
         self.start_time = time.time()
 
+        # Set up the clock
         self.clock = Label(master)
         self.clock.pack(side=BOTTOM)
-
-        self.__draw_grid()
-        self.__draw_sudoku()
         self.__draw_clock()
 
-        # self.__draw_clock()
+        self.__draw_sudoku()
 
     def __draw_grid(self):
         """
@@ -92,7 +97,7 @@ class GameUI:
             y1 = MARGIN + i * SIDE
             self.canvas.create_line(x0, y0, x1, y1, fill=color)
 
-    def __draw_sudoku(self):
+    def __draw_numbers(self):
         """
         Fills the grid with sudoku numbers
         """
@@ -104,7 +109,8 @@ class GameUI:
                     if number == self.original_sudoku[i][j]:
                         color = "black"
                     # Highlight numbers that are wrong
-                    elif self.check_mode and number != self.sudoku_solution[i][j]:
+                    elif self.check_mode and \
+                            number != self.sudoku_solution[i][j]:
                         color = "red"
                     else:
                         color = "blue"
@@ -153,7 +159,13 @@ class GameUI:
         if number in "1234567890" and self.row >= 0 and self.column >= 0:
             self.user_sudoku[self.row][self.column] = int(number)
             self.__draw_sudoku()
-            self.__draw_red_box()
+
+    def __draw_sudoku(self):
+        self.__draw_grid()
+        self.__draw_numbers()
+        self.__draw_red_box()
+        if self.is_sudoku_solved():
+            self.__draw_victory()
 
     def draw_solution(self):
         '''
@@ -177,8 +189,16 @@ class GameUI:
 
     def check_sudoku(self):
         self.check_mode = True
-        self.__draw_sudoku()
+        self.__draw_numbers()
         self.check_mode = False
+
+    def is_sudoku_solved(self):
+        for i in range(9):
+            for j in range(9):
+                number = self.user_sudoku[i][j]
+                if number != self.sudoku_solution[i][j]:
+                    return False
+        return True
 
     def __draw_clock(self):
 
@@ -188,7 +208,8 @@ class GameUI:
         t = "%02d:%02d" % (min, sec)
         self.clock.config(text=t)
         # Call this function to update the clock every 200 ms
-        self.clock.after(200, self.__draw_clock)
+        if not(self.is_sudoku_solved()):
+            self.clock.after(200, self.__draw_clock)
 
     def __draw_victory(self):
         # create a oval (which will be a circle)
@@ -205,6 +226,13 @@ class GameUI:
             text="Congrats!", tags="winner",
             fill="white", font=("Arial", 32)
         )
+        self.check_button.destroy()
+        self.hint_button.destroy()
+        self.solve_button.destroy()
+
+        self.start_button = Button(
+            self.master, text="Restart", fg='purple', command=self.start_game)
+        self.start_button.pack(side=BOTTOM)
 
 
 if __name__ == "__main__":
