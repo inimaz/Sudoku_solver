@@ -8,6 +8,11 @@ import time
 MARGIN = 20  # Pixels around the board
 SIDE = 50  # Width of every board cell.
 WIDTH = HEIGHT = MARGIN * 2 + SIDE * 9  # Width and height of the whole board
+number_of_removed_cells = 43  # It will affect the complexity of the sudoku. And it
+
+
+# will be slower the higher we go. Safe if < 35
+
 
 # if __name__ == "__main__":
 
@@ -21,7 +26,7 @@ class StartUI:
         self.frame.pack(side=TOP)
         self.label = Label(
             self.frame, text="\"If you are curious, you'll find the puzzles around"
-            " you. \nIf you are determined, you will solve them.\"")
+                             " you. \nIf you are determined, you will solve them.\"")
         self.label.pack(side=TOP)
 
         self.start_button = Button(
@@ -39,7 +44,7 @@ class StartUI:
         self.start_button.destroy()
 
 
-class GameUI (StartUI):
+class GameUI(StartUI):
     def __init__(self, master):
         self.master = master
         self.canvas = Canvas(master, width=WIDTH, height=HEIGHT, bg="white")
@@ -59,7 +64,7 @@ class GameUI (StartUI):
 
         # Get a sudoku and its solution.
         self.original_sudoku = sudoku_solver.randomized_sudoku(
-            N=35)  # Original
+            number_of_removed_cells)  # Original
         self.user_sudoku = deepcopy(self.original_sudoku)  # User will change
         self.sudoku_solution = sudoku_solver.solve_sudoku(
             deepcopy(self.user_sudoku))  # Solution of the sudoku
@@ -208,7 +213,7 @@ class GameUI (StartUI):
         t = "%02d:%02d" % (min, sec)
         self.clock.config(text=t)
         # Call this function to update the clock every 200 ms
-        if not(self.is_sudoku_solved()):
+        if not (self.is_sudoku_solved()):
             self.clock.after(200, self.__draw_clock)
 
     def __draw_victory(self):

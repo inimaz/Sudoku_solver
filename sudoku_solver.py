@@ -1,12 +1,14 @@
-import numpy as np
 import copy
+
+import numpy as np
+
 from sudoku_examples import sudoku_1
 
 
-def randomized_sudoku(N=55):
-    '''
+def randomized_sudoku(N=43):
+    """
     Generates a random sudoku
-    '''
+    """
 
     sud = np.zeros((9, 9)).astype(int)
 
@@ -21,10 +23,10 @@ def randomized_sudoku(N=55):
 
 
 def remove_cells(solved_sudoku, N=55):
-    '''
+    """
      This is an intermediate step. We remove cells and solve the sudoku
      if it is still the same solution we keep on. Removing N cells in total
-    '''
+    """
     final_sudoku = copy.deepcopy(solved_sudoku)
     n = 0
     # Loop
@@ -44,9 +46,9 @@ def remove_cells(solved_sudoku, N=55):
 
 
 def find_empty_cells(sud):
-    '''
+    """
     Returns the row and col of an unassigned cell
-    '''
+    """
     empty_cells = np.empty((0, 2), int)
     for i in range(9):
         for j in range(9):
@@ -57,9 +59,9 @@ def find_empty_cells(sud):
 
 
 def is_in_row(n, row, sud):
-    '''
+    """
     There is n in row
-    '''
+    """
     if n in sud[row, :]:
         return True
 
@@ -67,9 +69,9 @@ def is_in_row(n, row, sud):
 
 
 def is_in_column(n, column, sud):
-    '''
+    """
     There is n in column
-    '''
+    """
     if n in sud[:, column]:
         return True
 
@@ -77,9 +79,9 @@ def is_in_column(n, column, sud):
 
 
 def is_in_box(n, row, column, sud):
-    '''
+    """
     n is in the 3x3 box
-    '''
+    """
 
     if row <= 2:  # First 3 rows
         initial_row = 0
@@ -106,34 +108,34 @@ def is_in_box(n, row, column, sud):
 
 
 def check_cell_is_fine(n, row, column, sud):
-    '''
+    """
     See if the row has that number
     See if the column has that number
     See if the 3x3 box has that number
-    '''
+    """
     answer = not (is_in_column(n, column, sud)) and not (
         is_in_row(n, row, sud)) and not (is_in_box(n, row, column, sud))
     return answer
 
 
 def solve_sudoku(sudoku, print_sudoku=False):
-    '''
+    """
     Taking as input the matrix (9x9) of a sudoku. Use 0 for every
     not known number
 
-    '''
+    """
     # Initialize parameters
     solved = False
     i = 0
     empty_cells = find_empty_cells(sudoku)
 
-    while not(solved):
+    while not (solved):
 
         if i == (np.shape(empty_cells)[0]):
             # There are no more empty cells, therefore, finished
             solved = True
         else:
-            pos = empty_cells[i, ]
+            pos = empty_cells[i,]
             print('%%%%%%\nNode ', i, 'Position ', pos)
 
             row = pos[0].astype(int)
@@ -157,7 +159,7 @@ def solve_sudoku(sudoku, print_sudoku=False):
                         n_start = 9
 
             if n_start == 9:
-                    # If no solution found
+                # If no solution found
                 if i == 0:
                     # No solution found and in the first iteration
                     print('There is no solution for this sudoku')
